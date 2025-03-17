@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+  <section xml:id="sec-local_definitions" xmlns:xi="http://www.w3.org/2001/XInclude">
+    <title>Local Definitions</title>
+    <p>
+      The <c>let</c> keyword in Lean allows us to simplify expressions using a local definition.
+      The idea behind its usage in Lean is the same as when you're writing proof: to reduce clutter and improve readability.
+      The construct <c>let a := t₁; t₂</c> or
+      <cd>
+	<cline>let a := t₁</cline>
+	<cline>t₂</cline>
+      </cd>
+      is definitionally equivalent to replacing every occurence of <c>a</c> in the term <c>t₂</c> by the term <c>t₁</c>.
+    </p>
+
+    <example>
+      <p>
+	Suppose we wanted to add a value to itself, then multiply it by itself.
+	We could write this expression out.
+      </p>
+
+      <program language="lean">
+	<code>
+	  #eval (2 + 2)*(2 + 2)
+	</code>
+      </program>
+
+      <p>
+	The let construct allows us to reduce this
+      </p>
+
+      <program language="lean">
+	<code>
+	  #eval let y := 2 + 2; y*y
+	</code>
+      </program>
+      
+      <p>
+	We could of course nest this to make it a little clearer what's happening.
+      </p>
+
+      <program language="lean">
+	<code>
+	  #eval let x := 2; let y := x + x; y*y
+	</code>
+      </program>
+
+      <p>
+	Note that unlike the def keyword, the definition is out of scope immediately.
+      </p>
+    </example>
+
+    <p>
+      We can use this in definitions.
+    </p>
+
+    <program language="lean">
+      <code>
+	def twice_double (x : ℕ) : ℕ :=
+	let y := x + x; y * y
+      </code>
+    </program>
+
+    <p>
+      We can omit the semicolon(s) if we use a newline.
+    </p>
+
+    <program language="lean">
+      <code>
+	def twice_double₂ (x : ℕ) : ℕ :=
+	let s := x + x
+	s * s
+
+	#eval twice_double 2   -- 16
+	#eval twice_double₂ 2  -- Also 16.
+      </code>
+    </program>
+  </section>

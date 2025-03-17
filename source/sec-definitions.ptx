@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+  <section xml:id="sec-definitions" xmlns:xi="http://www.w3.org/2001/XInclude">
+    <title>Definitions</title>
+    <p>
+      Having to write out these expressions over and over again is quite cumbersome.
+      We can assign the name <c>t</c> to a term of type <c>T</c> with value <c>v</c> in Lean using the <c>def</c> keyword
+      <c>def (t : T) := v</c>.
+    </p>
+
+    <example>
+      <program language="lean">
+	<code>
+	  def m : ℕ := 1
+	  def n := 0                       -- Lean can often infer the type.
+	  def b₁ : Bool := true            -- use "\1" to typeset the subscript.
+	  def b₂ := false
+	  def s := "Hello, world!"
+	</code>
+      </program>
+    </example>
+
+    <p>
+      When the term we want to define is a function, we can omit the lambda notation.
+      <ul>
+	<li>
+	  <p>
+	    Arguments to our function appear after the name and before a semicolon.
+	  </p>
+	</li>
+	<li>
+	  <p>
+	    The type of the output appears after the semicolon.
+	  </p>
+	</li>
+	<li>
+	  <p>
+	    The output term appears after the <c>:=</c> symbol.
+	  </p>
+	</li>
+      </ul>
+    </p>
+
+    <example>
+      <program language="lean">
+	<code>
+	  def first (x y : ℕ) : ℕ := x
+	  def second (x y : ℕ) : ℕ := y
+
+	  #check (first : ℕ → ℕ → ℕ)
+	  #eval first 1 2
+
+	  #check (second : ℕ → ℕ → ℕ)
+	  #eval second 1 2
+
+	  def add_one (x : ℕ) := x + 1
+	  #check (add_one : ℕ → ℕ)
+
+	  def ev_1 (f : ℕ → ℕ) := f 1
+	  #check (ev_1 : (ℕ → ℕ) → ℕ)
+
+	  #check (ev_1 add_one : ℕ)
+	  #eval ev_1 add_one
+	</code>
+      </program>
+    </example>
+
+    <exercise>
+      <statement>
+	<p>
+	  Suppose we <alert>only</alert> know how to add two natural numbers.
+	  Define a function <c>double : ℕ → ℕ</c> that doubles the input.
+	  Use <c>#eval</c> to check that the result of <c>double 3</c> is <c>6</c>.
+	</p>
+	<program language="lean">
+	  <code>
+	    def double (x : ℕ) : ℕ := sorry
+	  </code>
+	</program>
+      </statement>
+    </exercise>
+    
+
+    <exercise>
+      <statement>
+	<p>
+	  Define a function <c>add : ℕ → ℕ</c> that adds two natural numbers.
+	  Check that <c>add 3 2 = 5</c>
+	</p>
+	<program language="lean">
+	  <code>
+	    def add (x y : ℕ) : ℕ := sorry
+	  </code>
+	</program>
+      </statement>
+    </exercise>
+
+    <exercise>
+      <statement>
+	<p>
+	  Use these functions to double 3, then add 9.
+	</p>
+      </statement>
+    </exercise>
+    
+    <exercise>
+      <statement>
+	<p>Write a function <c>greater : ℕ → ℕ → ℕ</c> that returns the larger of the two inputs.
+	</p>
+
+	<program language="lean">
+	  <code>
+	    def greater (x y : ℕ) : ℕ := sorry
+	  </code>
+	</program>
+      </statement>
+    </exercise>
+    
+
+    <exercise>
+      <statement>
+	<p>
+	  Suppose that <c>α : Type</c>.
+	  Write a function <c>doTwice : (α → α) → α → α</c> that applies a function <c>f : α → α</c> to <c>a : α</c> two times.
+	</p>
+
+	<program language="lean">
+	  <code>
+	    def doTwice (α : Type) (f : α → α) (a : α) : α := sorry
+
+	    #check (doTwice : (α : Type) → (α → α) → α → α)
+	  </code>
+	</program>
+      </statement>
+    </exercise>
+    
+
+    <exercise>
+      <statement>
+	<p>
+	  Suppose that <c>α : Type.</c>
+	  Write a function <c>doThrice : (α → α) → α → α</c> that applies a function <c>f : α → α</c> to <c>a : α</c> three times.
+	</p>
+	<program language="lean">
+	  <code>
+	    def doThrice (α : Type) (f : α → α) (a : α) : α := sorry
+	  </code>
+	</program>
+      </statement>
+    </exercise>
+
+    <exercise>
+      <statement>
+	<p>
+	  Use <c>#eval</c> to evaluate
+	  <ul>
+	    <li>
+	      <p>
+		<c>doTwice double 2.</c>
+	      </p>
+	    </li>
+	    <li>
+	      <p>
+		<c>doThrice double 2</c>
+	      </p>
+	    </li>
+	  </ul>
+	  Make sure the result is what you expect!
+	</p>
+      </statement>
+    </exercise>
+
+    <exercise>
+      <statement>
+	<p>
+	  Write a function <c>compose (α β γ : Type) → (β → γ) → (α → β) → α → γ</c> that applies the composition of <c>f : α → β</c> and <c>g : β → γ to x : α</c>.
+	</p>
+
+	<program language="lean">
+	  <code>
+	    def compose (α β γ : Type) (g : β → γ) (f : α → β) (x : α) : γ := sorry
+	  </code>
+	</program>
+      </statement>
+    </exercise>
+
+    <exercise>
+      <statement>
+	<p>
+	  Suppose we <alert>onl</alert> know how to multiply two natural numbers.
+	  Write a function <c>square : ℕ → ℕ</c> that squares the input.
+	</p>
+
+	<program language="lean">
+	  <code>
+	    def square (x : ℕ) : ℕ := sorry
+	  </code>
+	</program>
+      </statement>
+    </exercise>
+
+    <exercise>
+      <statement>
+	<p>
+	  Use <c>#eval</c> to evaluate the expression <m>(2*x)^2</m> at <m>x = 3</m> using the functions
+	  <ul>
+	    <li>
+	      <p>
+		<c>compose</c>
+	      </p>
+	    </li>
+	    <li>
+	      <p>
+		<c>double</c>, and
+	      </p>
+	    </li>
+	    <li>
+	      <p>
+		<c>square</c>
+	      </p>
+	    </li>
+	  </ul>
+	  defined above.
+	</p>
+      </statement>
+    </exercise>
+  </section>

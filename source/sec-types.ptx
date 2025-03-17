@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<section xml:id="sec-types" xmlns:xi="http://www.w3.org/2001/XInclude">
+  <title>Types</title>
+  
+  <p>
+    Lean's foundation is known as the <term>Calculus of Inductive Constructions</term>.
+    For our puroses, we restrict ourselves to a piece of this foundation called Simple Type Theory.
+    It might be simplest to understand type theory by analogy.
+  </p>
+
+  <p>
+    A <term>set theory</term> is a system to describe <term>sets</term>, which are (loosely) collections of objects.
+    The set theory with which you are familiar is the Zermelo-Fraenkel Set theory with the axiom of choice (<init>ZFC</init>).
+    In <init>ZFC</init>, the basic set operation from which all other set operations are formed is the membership operator: <m>x \in S</m> (<m>x</m> is an element of the set <m>S</m>).
+  </p>
+
+  <p>
+    By analogy, a <term>type theory</term> is a system to describe <term>types</term>, which are (loosely) characterizations or classifications of <term>terms</term> (objects).
+    The analogous operation to membership is the judgement, <c>x : S</c>, that the term <c>x</c> has type <c>S</c>.
+  </p>
+
+  <p>
+    We can use <c>#check</c> to ask Lean to provide the type of a given term.
+    If we have a term, <c>t</c>, the command <c>#check t</c> will print the type of t in the Lean Infoview window under Messages when the cursor is on the same line as the statement #check.
+  </p>
+
+  <program language="lean"> <!-- line-numbers="yes" -->
+    <code>
+      #check 1
+      #check 2
+      #check true
+      #check false
+      #check "Hello, world!"
+    </code>
+  </program>
+
+  <p>
+    If we think we know the term t has type S, we can use #check to ask Lean whether or not our guess is correct using the judgement operator: <c>#check t : S</c>
+  </p>
+
+  <program language="lean">
+    <code>
+      #check (1 : ℕ)
+      #check (2 : ℕ)
+      #check (3 : ℕ)
+      #check (3 + 0 : ℕ)
+      #check (4 * (5 + 0): ℕ)
+      #check (true : Bool)
+      #check (false : Bool)
+      #check (true &amp;&amp; false : Bool)           -- "&amp;&amp;" is the Boolean and
+      #check (true || false : Bool)           -- Boolean or
+      #check (true : Bool)                    -- Boolean "true"
+    </code>
+  </program>
+
+  <warning>
+    <p>
+      Unlike set theory, judgement is <em>not</em> a proposition, but a statement of fact.
+    </p>
+  </warning>
+
+  <example>
+    <p>
+      In set theory we can use set membership and negation to express logical statements symbolically.
+      The statement
+    </p>
+    <blockquote>
+      <p>
+        3 is an element of the natural numbers
+      </p>
+    </blockquote>
+
+    <p>
+      is represented symbolically as <m>3 \in \N</m>.
+      The statement
+    </p>
+
+    <blockquote>
+      <p>
+	<m>-7</m> is not an element of the natural numbers
+      </p>
+    </blockquote>
+
+    <p>
+      is represented as <m>\neg( 7 \in \N)</m> or, more commonly, <m>7 \not \in \N</m>.
+    </p>
+
+    <p>
+      In type theory, we make the judgement <c>3 : ℕ</c> because 3 is in fact a natural number.
+      However, we <em>cannot</em> negate types (what is the type of "not a natural number?") and so we also cannot negate judgements.
+    </p>
+
+    <p>
+      We should also note that judgements like <c>-7 : ℕ</c> simply do not make sense because <c>-7</c> is definitionally <em>not</em> a natural number.
+      These types of statements result in errors.
+    </p>
+
+    <program language="lean">
+      <code>
+	#check ¬ℕ            -- Type error
+	#check -7 : ℕ        -- Type error
+	#check ¬(-7 : ℕ)     -- Type error
+      </code>
+    </program>
+  </example>
+</section>

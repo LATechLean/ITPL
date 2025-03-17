@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<section xml:id="sec-type_constructions" xmlns:xi="http://www.w3.org/2001/XInclude">
+  <title>Type Constructions</title>
+
+  <introduction>
+    <p>
+      A powerful feature of type theory is the ability to construct new types from existing types.
+      The simplest ways to do this involve Function Types and Product Types.
+      Each of these are constructed from two types, <c>α</c> and <c>β</c>.
+    </p>
+  </introduction>
+
+  <subsection xml:id="subsec-function_types">
+    <title>Function Types</title>
+    <p>
+      A <term>function type</term> <c>α → β</c> represents a function that transforms a term of type <c>α</c> into a term of type <c>β</c>.
+      A term <c>α → β</c> will have type <c>Type</c>.
+    </p>
+
+    <example>
+      <program language="lean">
+	<code>
+	  #check ℕ → ℕ      -- type the arrow as "\to" or "\r"
+	  #check ℕ -> ℕ     -- alternative ASCII notation
+	</code>
+      </program>
+    </example>
+  </subsection>
+
+  <subsection xml:id="subsec-product_types">
+    <title>Product Types</title>
+    <p>
+      A product type <c>α × β</c> represents a pair of terms of type <c>α</c> and <c>β</c>.
+      A term <c>α × β</c> will also have type <c>Type</c>.
+    </p>
+
+    <example>
+      <program language="lean">
+	<code>
+	  #check ℕ × ℕ      -- type the product as "\times"
+	  #check Prod ℕ ℕ   -- alternative notation
+	</code>
+      </program>
+    </example>
+
+    <p>
+      Terms of type <c>α × β</c> come equipped with two projections.
+    </p>
+
+    <example>
+      <p>
+	Suppose <c>a : α</c> and <c>b : β</c>.
+	The term <c>(a,b) : α × β</c> has a projection onto the first and section slot.
+      </p>
+      <program language="lean">
+	<code>
+	  #check ((a,b).1 : α)
+	  #check ((a,b).2 : β)
+	  #check ((1,false) : ℕ × Bool)
+	  #check ((1,true).1 : ℕ)
+	  #check ((1,true).2 : Bool)
+	</code>
+      </program>
+    </example>
+  </subsection>
+
+  <subsection xml:id="subsec-iterated_constructions">
+    <title>Iterated Constructions</title>
+    <p>
+      We can iterate these constructions to create longer chains of functions	or longer chains of products.
+      Note that in lean, these expressions naturally associate to the <em>right</em>.
+    </p>
+
+    <example>
+      <program language="lean">
+	<code>
+	  --  A function with domain ℕ and codomain ℕ → ℕ
+	  #check ℕ → ℕ → ℕ
+	  #check ℕ → (ℕ → ℕ)  --  same type as above
+
+	  -- A function with domain ℕ → ℕ and codomain ℕ.
+	  #check (ℕ → ℕ) → ℕ  -- not the same as the two above.
+
+	  -- Triples
+	  #check ℕ × ℕ × ℕ
+	  #check ℕ × (ℕ × ℕ)  -- same type as above
+	  #check ((1,(2,3)) : ℕ × ℕ × ℕ)
+	  
+	  #check (ℕ × ℕ) × ℕ  -- not the same as the two above.
+	  #check ((1,2), 3) : (ℕ × ℕ) × ℕ)
+
+	  -- A function with domain ℕ × ℕ and codomain ℕ.
+	  #check ℕ × ℕ → ℕ
+
+	  -- A function with domain ℕ and codomain ℕ × ℕ.
+	  #check ℕ → ℕ × ℕ
+	</code>
+      </program>
+    </example>
+  </subsection>
+
+
+  <subsection xml:id="subsec-universes">
+    <title>Universes</title>
+    <p>
+      In Lean, types are organized in a (countable) infinite hierarchy of universes.
+      <ul>
+	<li>
+	  <p>
+	    <c>Type 0</c> (or, simply, <c>Type</c>) contains all <q>ordinary</q> types such as <c>ℕ</c>, <c>Bool</c>, <c>String</c>, <etc/> and any types that are constructed from these.
+	  </p>
+	</li>
+	<li>
+	  <p>
+	    <c>Type 1</c> contains types that treat types of <c>Type 0</c> as elements and types constructed from these.
+	    For example, <c>Type</c> has <c>Type 1</c> because, <eg/>, <c>ℕ</c> is a term of type <c>Type</c>.
+	    Simialrly, functions <c>Type → Type</c> have <c>Type 1</c> because they are constructed using <c>Type : Type 1</c>.
+	  </p>
+	</li>
+	<li>
+	  <p>
+	    <c>Type n</c> is constructed inductively.
+	    If we have constructed <c>Type (n-1)</c>, then we have already constructed a term of type <c>Type n</c>, namely <c>Type (n-1)</c>.
+	    This is because <c>Type (n-1)</c> contains terms of type <c>Type (n-1)</c>.
+	    Any types constructed from terms of <c>Type n</c>, <eg/> <c>Type (n-1) → Type (n-1)</c>, is also of type <c>Type n</c>.
+	  </p>
+	</li>
+      </ul>
+    </p>
+
+    <example>
+      <program language="lean">
+	<code>
+	  #check (Type : Type 1)
+	  #check (Type → Type : Type 1)
+	  #check (Type 1 → Type 1 : Type 2)
+	</code>
+      </program>
+
+      <p>
+	When we wish to consider a type in an unspecified level of the heirarchy in Lean, we usually specify the <term>universe</term>, rather than <c>Type n</c>:
+      </p>
+      <program language="lean">
+	  <code>
+	    universe u
+
+	    #check (Type u : Type (u + 1))
+	    #check (Type u → Type u : Type (u +1 ))
+	  </code>
+	</program>
+    </example>
+  </subsection>
+</section>

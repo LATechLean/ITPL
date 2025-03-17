@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<section xml:id="sec-namespaces" xmlns:xi="http://www.w3.org/2001/XInclude">
+  <title>Namespaces</title>
+  <p>
+    Namespaces are similar to sections.
+    Unlike a section, all definitions are internal to the namespace.
+    However, we can access elements of a namespace using fully qualified names.
+  </p>
+
+  <example>
+    <program>
+      <code>
+	namespace Namespaces
+
+	namespace Foo
+	def a : ℕ := 5
+	def add_seven (x : ℕ) : ℕ := x + 7
+
+	def add_seven_a : ℕ := add_seven a
+
+	-- Inside a namespace, we can use short names.
+
+	#check a
+	#check add_seven
+	#check add_seven_a
+	
+	--We can also use the fully qualified name
+
+	#check Foo.add_seven
+	end Foo
+
+	-- Outside the namespace, we must use the fully qualified name.
+	#check a          -- Fails; outside namespace.
+	#check add_seven  -- Fails; outside namespace.
+
+	#check Foo.a
+	#check Foo.add_seven
+
+	--If we don't want to use the fully qualified names, we can open the namespace.
+
+	open Foo
+
+	#check a
+	#check add_seven
+
+	--We can re-enter namespaces later.
+
+	namespace Foo
+	#check a
+	#check add_seven
+
+	--We can also nest namespaces.
+	namespace Bar
+	def add_fourteen_a : ℕ := add_seven (add_seven a)
+
+	#check add_seven_a
+	#check add_fourteen_a
+	end Bar
+
+	#check add_seven_a
+	#check Bar.add_fourteen_a
+	end Foo
+
+	#check Foo.add_seven_a
+	#check Foo.Bar.add_fourteen_a
+
+	open Foo
+
+	#check add_seven_a
+	#check Bar.add_fourteen_a
+
+	#check Foo.a
+	#check Foo.add_seven
+
+	namespace Foo
+	def add_fourteen_a : ℕ := add_seven (add_seven a)
+	#check add_fourteen_a       -- Note these are not the same.
+	#check Bar.add_fourteen_a
+	end Foo
+      </code>
+    </program>
+  </example>
+</section>

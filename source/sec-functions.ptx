@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<section xml:id="sec-lambda_abstractions" xmlns:xi="http://www.w3.org/2001/XInclude">
+  <title><c>λ</c> Abstractions</title>
+  <p>
+    We can define functions of type <c>α → β</c> using λ abstractions.
+    This can be achieved using the <c>fun</c> and <c>λ</c> keywords.
+  </p>
+  
+  <example>
+    <p>
+      Suppose we would like to define the function with domain <m>\N</m> and codomain <m>\N</m> that adds five to the input
+      <md>
+	<mrow>\N \amp\to \N</mrow>
+	<mrow>x \amp\mapsto x + 5</mrow>
+      </md>
+      In lean, this is defined using the following lambda abstraction.
+    </p>
+    <program language="lean">
+      <code>
+	#check (fun x : ℕ => x + 5 : ℕ → ℕ)
+	#check (λ x : ℕ ↦ x + 5 : ℕ → ℕ)        -- These are equivalent.
+      </code>
+    </program>
+    <p>
+      Here, we have listed the types explicitly.
+      However, Lean can often infer the type of the input and output from context.
+    </p>
+      <program language="lean">
+	<code>
+	  #check (fun x => x + 5 : ℕ → ℕ)
+	  #check (λ x ↦ x + 5 : ℕ → ℕ)
+	</code>
+      </program>
+  </example>
+
+  <p>
+    Lean provides a mechanism to evaluate certain expressions called <c>#eval</c>.
+    This mechanism can evaluate basic arithmetic and boolean expressions, as well as lambda abstractions.
+  </p>
+
+  <program language="lean">
+    <code>
+      #eval 5 * 4              -- 20
+      #eval 1 + 2              -- 3
+      #eval true \amp\amp false      -- false
+      #eval true || false      -- true
+      #eval ¬true              -- false
+      #eval (λ x ↦ x + 5) 10 -- 10 + 5 = 15.
+    </code>
+  </program>
+
+  <p>
+    We can construct functions of multiple variables using the iterated constructions from <xref ref="subsec-iterated_constructions"/>.
+  </p>
+  
+  <example>
+    <p>
+      Consider the function that adds two natural numbers together.
+      Since addition is a binary operation, we think about the input as being and would normally think of this function as 
+      <md>
+	<mrow>\N \times \N \amp\to \N</mrow>
+	<mrow>(m,n) \amp\mapsto m + n</mrow>
+      </md>
+      We can, of course, write the λ abstraction in Lean fairly easily:
+    </p>
+
+    <program language="lean">
+      <code>
+	#eval (λ ((x,y) : ℕ × ℕ) ↦ x + y) (1,2) -- 1 + 2 = 3
+      </code>
+    </program>
+
+    <p>
+      However, this is not the <em>only</em> way.
+      This method forces the two numbers we want to add together to be bundled as a pair.
+      We could instead define this as a function of type <c>ℕ → ℕ → ℕ</c> using nested λ abstractions:
+    </p>
+
+    <program language="lean">
+      <code>
+	#eval (λ x : ℕ ↦ λ y : ℕ ↦ x + y) 1 2 -- 1 + 2 = 3.
+      </code>
+    </program>
+
+    <p>
+      While this notation is cumbersome, it makes clear how Lean processes this evaluation.
+      Recall that <c>→</c> associates to the right by default, so our function has type <c>ℕ → (ℕ → ℕ)</c>;
+      that is to say, the domain of our function is <c>ℕ</c> and the codomain is <c>ℕ → ℕ</c>.
+      Hence the function we have defined uses the input, <c>1</c>, to create from it a new function <c>λ y : ℕ ↦ 1 + y</c> of type <c>ℕ → ℕ</c> and evaluates this function at <c>2</c> to obtain the result.
+    </p>
+
+    <p>
+      Fortunately, Lean allows us to reduce to a single <c>λ</c> as follows:
+    </p>
+
+    <program language="lean">
+      <code>
+	#check (λ (x : ℕ) (y : ℕ) ↦ x + y : ℕ → ℕ → ℕ)
+	#eval (λ (x : ℕ) (y : ℕ) ↦ x + y) 1 2               -- Evaluates to 3
+      </code>
+    </program>
+
+    <p>
+      Lean allows us to reduce even further by grouping terms of the same type.
+    </p>
+
+    <program language="lean">
+      <code>
+	#check (λ (x y : ℕ) ↦ x + y : ℕ → ℕ → ℕ)
+	#eval (λ (x y : ℕ) ↦ x + y) 1 2               -- Evaluates to 3
+      </code>
+    </program>
+  </example>
+
+  <warning>
+    <p>
+      Association is very important here!
+      <!-- Remember that Lean naturally associates to the <em>right</em>, so that <c>ℕ → ℕ → ℕ</c> means the same thing as <c>ℕ → (ℕ → ℕ)</c>. -->
+      If we force association on the <em>left</em>, <c>(ℕ → ℕ) → ℕ</c>, then we obtain a function that accepts as input a function <c>ℕ → ℕ</c> and outputs a number.
+    </p>
+  </warning>
+
+  <example>
+    <p>
+      For every <c>n : ℕ</c>, we can define an <q>evaluation at n</q> function.
+      Below, we define the evaluation at <c>1</c> function:
+    </p>
+
+    <program language="lean">
+      <code>
+	-- This fails because our function is NOT a function of 2 natural numbers!
+	#check (λ (f : ℕ → ℕ) ↦ f 1 : ℕ → ℕ → ℕ)
+        #check (λ (f : ℕ → ℕ) ↦ f 1 : (ℕ → ℕ) → ℕ)
+      </code>
+    </program>
+
+    <!-- <p> -->
+    <!--   Evaluating the <q>evaluate at 1</q> function at the function <c> λ x : ℕ ↦ x + 1</c> reduces to -->
+    <!--   <md> -->
+    <!-- 	<mrow>(\lambda\ (f : ℕ \to ℕ) \mapsto f\ 1)\ (λ\ (x : ℕ) \mapsto x + 1) \amp= (λ\ (x : ℕ) \mapsto x + 1)\ 1</mrow> -->
+    <!--     <mrow>\amp= 1 + 1</mrow> -->
+    <!--     <mrow>\amp= 2</mrow> -->
+    <!--   </md>. -->
+    <!-- </p> -->
+    <p>
+      We can check that if we apply this <q>evaluate at 1</q> function to the function <c>λ x : ℕ ↦ x + 1</c>, then we obtain the same result as if we evaluated <c>(λ x : ℕ ↦ x + 1) 1</c>
+    </p>
+
+    <program language="lean">
+      <code>
+	#eval (λ (f : ℕ → ℕ) ↦ f 1) (λ (x : ℕ) ↦ x + 1) --  Evaluates to 2.
+      </code>
+    </program>
+  </example>
+
+  <p>
+    Defining functions in this way is frequently useful not only programmatically, but mathematically as well.
+    The idea of decomposing a function of more than one variable into a sequence of functions of a single variable is known as <term>currying</term>, named for the mathematician Haskell Curry.
+  </p>
+
+  <example>
+    <p>
+      A nice mathematical example of currying occurs in the basic theory of abelian groups.
+      Recall that an <term>abelian group</term>, <m>A</m>, is a set equipped with a binary operation <mdash/> often written as addition unless otherwise specified <mdash/> that satisfies the following axioms.
+      <dl>
+	<li>
+	  <title>Associativity</title>
+	  <p>
+	    For all <m>a,b,c \in A</m>,
+	    <me>a + (b + c) = (a + b) + c</me>,
+	  </p>
+	</li>
+	<li>
+	  <title>Identity</title>
+	  <p>
+	    There exists <m>0 \in A</m> such that for all <m>a \in A</m>,
+	    <me>0 + a = a = a + 0</me>
+	  </p>
+	</li>
+	<li>
+	  <title>Inverses</title>
+	  <p>
+	    For all <m>a \in A</m>, there exists <m>-a \in A</m> such that
+	    <me>a + (-a) = 0 = -a + a</me>,
+	  </p>
+	</li>
+	<li>
+	  <title>Commutativity</title>
+	  <p>
+	    For all <m>a,b \in A</m>, <m>a + b = b + a</m>.
+	  </p>
+	</li>
+      </dl>
+    </p>
+    <p>
+      Recall also that a <term>homomorphism of (abelian) groups</term> is a structure preserving function <m>\varphi \colon A \to B</m> in the sense that for all <m>a_1, a_2 \in A</m>,
+      <me>\varphi(a_1 + a_2) = \varphi(a_1) + \varphi(a_2)</me>.
+      It is a quick exercise to show that adding homomorphisms by the rule
+      <me>(\varphi + \psi)(x) = \varphi(x) + \psi(x)</me>
+      endows the set of all homomorphisms <m>\operatorname{Hom}(A,B)</m> with the structure of an abelian group.
+    </p>
+
+    <p>
+      The proof that every abelian group, <m>A</m>, is isomorphic to <m>\operatorname{Hom}(\Z,A)</m> provides a nice example of currying.
+      The standard proof of this result is to define two maps
+      <md>
+	<mrow>
+	  \operatorname{Ev}_1 \colon \operatorname{Hom}(\Z,A) \amp\to A
+	  \amp
+	  \Phi \colon A \amp\to \operatorname{Hom}(\Z,A) 
+	</mrow>
+      </md>
+      then show they are both homomorphisms of abelian groups and they are inverses to one another in the sense that
+      <md>
+	<mrow>
+	  \operatorname{Ev}_1 \circ \Phi \amp= \operatorname{id}_{A}
+	  \amp
+	  \Phi \circ \operatorname{Ev}_1 \amp= \operatorname{id}_\operatorname{Hom}(Z,A)
+	</mrow>
+      </md>.
+    </p>
+
+    <p>
+      If we don't focus too much on the fact that functions in <m>\operatorname{Hom}(\Z,A)</m> carry any additional structure, then we might have written these functions more type-theoretically as
+      <md>
+	<mrow>
+	  \operatorname{Ev}_1 \colon (\Z \to A) \amp\to A
+	  \amp
+	  \Phi \colon A \amp\to (\Z \to A)
+	</mrow>
+      </md>
+      The first function is suggestively named <em>evaluation at 1</em>, because that's precisely what it does <mdash/> given a homomorphism <m>\varphi \colon \Z \to A</m>, we obtain an element of <m>A</m> by evaluating <m>\varphi</m> at 1:
+      <me>\operatorname{Ev}_1(\varphi) = \varphi(1)</me>.
+      The trick for defining <m>\Phi</m> is to recognize that repeated addition provides a well-defined function
+      <md>
+	<mrow>\Z \times A \amp\to A</mrow>
+	<mrow>(n, a) \amp\mapsto \underbrace{a + a + \cdots + a}_n</mrow>
+      </md>
+      which we write as <m>n \cdot a</m> or simply <m>na</m>.
+      If we fix <m>a \in A</m>, then currying the action of <m>\Z</m> on <m>A</m> above provides the map <m>\Phi(a) \colon \Z \to A</m>
+      <md>
+	<mrow>\Phi(a) \colon \Z \amp\to A</mrow>
+	<mrow>n \amp \mapsto na</mrow>
+      </md>
+    </p>
+  </example>
+</section>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<section xml:id="sec-sections" xmlns:xi="http://www.w3.org/2001/XInclude">
+  <title>Sections</title>
+  <p>
+    Sometimes, we don't want these variables to persist beyond the definitions.
+    Sections are useful for limiting the scope of variables.
+    The can either be named or anonymous.
+  </p>
+
+  <example>
+    <title>Anonymous Section</title>
+    <program language="lean">
+      <code>
+	section -- Anonymous section
+	variable (T : Type)
+	#check T
+	end
+
+	#check T -- This fails because the name T is destroyed at the end of the section.
+      </code>
+    </program>
+  </example>
+
+  <example>
+    <title>Named Section</title>
+    <program language="lean">
+      <code>
+	section useful
+	variable (S T U : Type)
+
+	def compose₄ (g : T → U) (f : S → T) (x : S) : U := sorry
+	def doTwice₄ (h : S → S) (x : S) : S := sorry
+	def doThrice₄ (h : S → S) (x : S) : S := sorry
+	end useful
+
+	#check S
+	#check T
+	#check U
+	#check compose₄
+	#print compose₄
+      </code>
+    </program>
+  </example>
+
+  <warning>
+    <p>
+      Note that while the names from variable do not persist beyond the section, the names
+      from def do persist!  Moreover, the same names persist internal to the functions.
+    </p>
+  </warning>
+</section>

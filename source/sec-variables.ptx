@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section xml:id="sec-variables" xmlns:xi="http://www.w3.org/2001/XInclude">
+  <title>Variables</title>
+  <p>
+    Recall the function definitions above:
+  </p>
+
+  <program language="lean">
+    <code>
+      def compose (α β γ : Type) (g : β → γ) (f : α → β) (x : α) : γ
+      def doTwice (α : Type) (h : α → α) (x : α) : α
+      def doThrice (α : Type) (h : α → α) (x : α) : α := sorry
+    </code>
+  </program>
+
+  <p>
+    The types <c>α</c>, <c>β</c>, and <c>γ</c> appear in each of these.
+    It is cumbersome to have to keep writing these explicitly in every one of our definitions.
+    We can use the variable keyword to reduce some of the clutter here.
+    The exact same definitions above will work for these new functions.
+  </p>
+
+  <program language="lean">
+    <code>
+      variable (α β γ : Type)
+
+      def compose₂ (g : β → γ) (f : α → β) (x : α) : γ := sorry
+      def doTwice₂ (h : α → α) (x : α) : α  := sorry
+      def doThrice₂ (h : α → α) (x : α) : α := sorry
+    </code>
+  </program>
+  
+  <p>
+    We could even go so far as to use variables for the functions.
+    Again, pasing the same definition will provide a definitionally
+    equal function in each case.
+  </p>
+
+  <program>
+    <code>
+      variable (α β γ : Type)
+      variable (g : β → γ) (f : α → β) (h : α → α)
+      variable (x : α)
+
+      def compose₃  := sorry
+      def doTwice₃  := sorry
+      def doThrice₃ := sorry
+    </code>
+  </program>
+
+  <p>
+    We can actually see these are definitionally equal using #print.
+  </p>
+
+  <program language="lean">
+    <code>
+      #print compose
+      #print compose₂
+      #print compose₃
+
+      #print doTwice
+      #print doTwice₂
+      #print doTwice₃
+
+      #print doThrice
+      #print doThrice₂
+      #print doThrice₃
+    </code>
+  </program>
+</section>

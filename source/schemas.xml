@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<locatingRules xmlns="http://thaiopensource.com/ns/locating-rules/1.0">
+  <uri resource="sec-sections.ptx" uri="../../../pretext/schema/pretext.rnc"/>
+  <uri resource="ch-simple_type_theory.ptx" uri="../../../pretext/schema/pretext.rnc"/>
+  <uri resource="ch-definitions.ptx" uri="../../../pretext/schema/pretext.rnc"/>
+  <uri resource="sec-type_constructions.ptx" uri="../../../pretext/schema/pretext.rnc"/>
+  <uri resource="sec-types.ptx" uri="../../../pretext/schema/pretext.rnc"/>
+  <uri resource="sec-section-name.ptx" uri="../../../pretext/schema/pretext.rnc"/>
+</locatingRules>
