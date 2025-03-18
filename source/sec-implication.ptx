@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<section xml:id="sec-implication" xmlns:xi="http://www.w3.org/2001/XInclude">
+  <title>Implication</title>
+
+  <introduction>
+    <p>
+      Following the propositions as types paradigm, proving an implication <c>p → q</c> requires us to construct a function of type <c>p → q</c>.
+    </p>
+  </introduction>
+
+  <subsection xml:id="subsec-implication_truth_table">
+    <title>Constructing the Truth Table</title>
+    <p>
+      To make this clearer, we begin by constructing each row of the usual truth table for implication
+    </p>
+
+    <table>
+      <title>Truth table for implication</title>
+      <tabular halign="center">
+	<row bottom="medium">
+	  <cell right="medium">
+            <m>p</m>
+	  </cell>
+	  <cell right="medium">
+            <m>q</m>
+	  </cell>
+	  <cell>
+            <m>p \implies q</m>
+	  </cell>
+	</row>
+	<row>
+	  <cell right="medium">
+            True
+	  </cell>
+	  <cell right="medium">
+            True
+	  </cell>
+	  <cell>
+            True
+	  </cell>
+	</row>
+	<row>
+	  <cell right="medium">
+            True
+	  </cell>
+	  <cell right="medium">
+            False
+	  </cell>
+	  <cell>
+            False
+	  </cell>
+	</row>
+	<row>
+	  <cell right="medium">
+            False
+	  </cell>
+	  <cell right="medium">
+            True
+	  </cell>
+	  <cell>
+            True
+	  </cell>
+	</row>
+	<row>
+	  <cell right="medium">
+            False
+	  </cell>
+	  <cell right="medium">
+            False
+	  </cell>
+	  <cell>
+            True
+	  </cell>
+	</row>
+      </tabular>
+    </table>
+
+    <reading-questions>
+      <title>Checkpoint</title>
+      <introduction>
+	<p>
+	  Before moving on to the proofs, we should practice our translation skills by carefully formalizing these rows.
+	</p>
+
+	<p>
+	  Formalize the statement of each of the following propositions as an <c>example</c> in Lean.
+	  Follow the naming convention that a proof of <c>p : Prop</c> is <c>h_p : p</c>, while a proof of <c>¬p</c> is <c>h_np : ¬p</c>.
+	  You do not need to supply a proof.
+	</p>
+      </introduction>
+      
+      <exercise>
+	<statement>
+	  <p>
+	    If <m>p</m> is true and <m>q</m> is true, then <m>p \implies q</m> is true.
+	  </p>
+	</statement>
+	<solution>
+	  <program language="lean">
+	    <code>
+	      variable (p q : Prop)
+	      example (h_p : p) (h_q : q) : p → q := sorry
+	    </code>
+	  </program>
+	</solution>
+      </exercise>
+
+      <exercise>
+	<statement>
+	  <p>
+	    If <m>p</m> is true and <m>q</m> is false, then <m>p \implies q</m> is false.
+	  </p>
+	</statement>
+	<solution>
+	  <program language="lean">
+	    <code>
+	      variable (p q : Prop)
+	      example (h_np : ¬p) (h_nq : q) : ¬(p → q) := sorry
+	    </code>
+	  </program>
+	</solution>
+      </exercise>
+      
+      <exercise>
+	<statement>
+	  <p>
+	    If <m>p</m> is false and <m>q</m> is true, then <m>p \implies q</m> is true.
+	  </p>
+	</statement>
+	<solution>
+	  <program language="lean">
+	    <code>
+	      variable (p q : Prop)
+	      example (h_np : ¬p) (h_q : q) : p → q := sorry
+	    </code>
+	  </program>
+	</solution>
+      </exercise>
+
+      <exercise>
+	<statement>
+	  <p>
+	    If <m>p</m> is false and <m>q</m> is false, then <m>p \implies q</m> is true.
+	  </p>
+	</statement>
+	<solution>
+	  <program language="lean">
+	    <code>
+	      variable (p q : Prop)
+	      example (h_np : ¬p) (h_nq : q) : p → q := sorry
+	    </code>
+	  </program>
+	</solution>
+      </exercise>
+    </reading-questions>
+  </subsection>
+
+  <subsection xml:id="subsec-implication_proofs">
+    <title>Constructing Proofs of Implications</title>
+    <p>
+      The proofs for the first and third rows are simple, while the second and fourth are trickier.
+    </p>
+
+    <example>
+      <title>Proof of Odd Rows</title>
+      <p>
+	In the odd rows, we already have the hypothesis <c>h_q : q</c>, so in each case we only need to construct a function of type <c>p → q</c>.
+      </p>
+      
+      <program language="lean">
+	<code>
+	  variable (p q : Prop)
+	  example (h_p : p) (h_q : q) : p → q := λ h : p ↦ h_q
+
+	  example (p q : Prop) (h_np : ¬p) (h_q : q) : p → q := λ h : p ↦ h_q
+	</code>
+      </program>
+    </example>
+
+    <remark>
+      <p>
+	VS Code underlines the assumptions <c>h_p</c> and <c>h_np</c> in our example statements.
+	This alerts us to the fact that these assumptions are not being used, so we could refactor each to the same example:
+      </p>
+
+      <program language="lean">
+	<code>
+	  variable (p q : Prop)
+	  example (h_q : q) : p → q := λ (h_p : p) ↦ h_q
+	</code>
+      </program>
+
+      <p>
+	Note also that <c>h_p : p</c> is an unused assumption in the actual proof term.
+	We can omit it using the wildcard <c>_</c> (underscore).
+      </p>
+
+      <program language="lean">
+	<code>
+	  variable (p q : Prop)
+	  example (h_q : q) : p → q := λ _ ↦ h_q
+	</code>
+      </program>
+    </remark>
+
+    <example>
+      <title>Row Two</title>
+      <p>
+	The second is slightly trickier to prove.
+	We recall that <c>¬(p → q)</c> is actually a function of type <c>(p → q) → False</c>.
+	This allows us to think of this case as proving <c>False</c> using the following assumptions:
+	<ul>
+	  <li>
+	    <p>
+	      <c>h_p : p</c>
+	    </p>
+	  </li>
+	  <li>
+	    <p>
+	      <c>h_nq : q → False</c>
+	    </p>
+	  </li>
+	  <li>
+	    <p>
+	      <c>h_pq : p → q</c>
+	    </p>
+	  </li>
+	</ul>
+	We can produce a term of type <c>q</c> by applying <c>h_pq</c> to <c>h_p</c>; that is to say, <c>h_pq h_p : q</c>.
+	We can apply <c>h_nq</c> to this term to obtain <c>False</c>, which is to say <c>h_nq (h_pq h_p) : False</c>.
+      </p>
+
+      <program language="lean">
+	<code>
+	  variable (p q : Prop)
+	  example (h_p : p) (h_q : ¬q) : ¬(p → q) :=
+	  λ (h_pq : p → q) ↦ h_q (h_pq h_p)
+	</code>
+      </program>
+    </example>
+
+    
+    <p>
+      It might be helpful to regard this as the Lean analogue of the following informal proof by contradiction.
+    </p>
+    
+    <proof>
+      <p>
+	Assume <m>p</m> is true and <m>q</m> is false.
+	Suppose to the contrary that <m>p \implies q</m> is true.
+	Since <m>p</m> is true and <m>p → q</m>, <m>q</m> is true by Modus Ponens.
+	This contradicts the assumption that <m>q</m> is false.
+	Therefore <m>p → q</m> is false.
+      </p>
+    </proof>
+
+    <example>
+      <title>Row Four</title>
+      <p>
+	The final case, unfortunately, is not constructable.
+	That means there is no way in which we can use hypotheses
+	<ul>
+	  <li>
+	    <p>
+	      <c>h_np : p → False</c>
+	    </p>
+	  </li>
+	  <li>
+	    <c> h_nq : q → False</c>
+	  </li>
+	</ul>
+	to construct a term of type <c>p → q</c>.
+      </p>
+      
+      <p>
+	However, we can prove anything from a contradiction.
+	This is known as the <term>Principle of Explosion</term> (ex falso quodlibet).
+	The proposition <c>False</c> comes equipped with an <term>Elimination Rule</term>, <c>False.elim</c> for exactly this purpose.
+      </p>
+
+      <program language="lean">
+	<code>
+	  variable (p q : Prop)
+	  example (h_np : ¬p) (h_nq : ¬ q) : p → q :=
+	  λ h_p : p ↦ False.elim (h_np h_p)
+	</code>
+      </program>
+    </example>
+
+    <remark>
+      <p>
+	As before, we can see that <c>h_nq</c> is not relevant to this example, so we could refactor to the following simpler example.
+      </p>
+
+      <program language="lean">
+	<code>
+	  example (p q : Prop) (h_np : ¬p) : p → q :=
+	  λ (h_p : p) ↦ False.elim (h_np h_p)
+	</code>
+      </program>
+    </remark>
+  </subsection>
+</section>

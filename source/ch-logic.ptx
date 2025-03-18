@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<chapter xml:id="ch-logic" xmlns:xi="http://www.w3.org/2001/XInclude">
+  <title>Logic</title>
+
+  <!-- <introduction> -->
+  <!--   <p> Text before the first section. </p> -->
+  <!-- </introduction> -->
+
+  <!-- include sections -->
+  <xi:include href="sec-propositions_as_types.ptx"/>
+  <xi:include href="sec-implication.ptx"/>
+  <xi:include href="sec-disjunction.ptx"/>
+  <xi:include href="sec-conjunction.ptx"/>
+  <xi:include href="sec-biconditional.ptx"/>
+  <xi:include href="sec-structuring_proofs.ptx"/>
+  <xi:include href="sec-classical.ptx"/>
+</chapter>

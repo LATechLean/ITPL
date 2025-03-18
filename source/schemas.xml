@@ -1,5 +1,15 @@
 <?xml version="1.0"?>
 <locatingRules xmlns="http://thaiopensource.com/ns/locating-rules/1.0">
+  <uri resource="sec-structuring_proofs.ptx" uri="../../../pretext/schema/pretext.rnc"/>
+  <uri resource="sec-stuff.ptx" uri="../../../pretext/schema/pretext.rnc"/>
+  <uri resource="sec-biconditional.ptx" uri="../../../pretext/schema/pretext.rnc"/>
+  <uri resource="sec-disjunction.ptx" uri="../../../pretext/schema/pretext.rnc"/>
+  <uri resource="sec-conjunction.ptx" uri="../../../pretext/schema/pretext.rnc"/>
+  <uri resource="sec-implication.ptx" uri="../../../pretext/schema/pretext.rnc"/>
+  <uri resource="sec-propositions_as_types.ptx" uri="../../../pretext/schema/pretext.rnc"/>
+  <uri resource="ch-logic.ptx" uri="../../../pretext/schema/pretext.rnc"/>
+  <uri resource="sec-definitions.ptx" uri="../../../pretext/schema/pretext.rnc"/>
+  <uri resource="ch-logic.ptx" uri="../../../pretext/schema/pretext.rnc"/>
   <uri resource="sec-sections.ptx" uri="../../../pretext/schema/pretext.rnc"/>
   <uri resource="ch-simple_type_theory.ptx" uri="../../../pretext/schema/pretext.rnc"/>
   <uri resource="ch-definitions.ptx" uri="../../../pretext/schema/pretext.rnc"/>

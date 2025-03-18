@@ -13,7 +13,7 @@
 
     <!-- Include chapters -->
     <xi:include href="./ch-simple_type_theory.ptx" />
-    <!-- <xi:include href="./ch-definitions.ptx"/> -->
+    <xi:include href="./ch-logic.ptx"/>
 
 
     <!-- Include backmatter -->

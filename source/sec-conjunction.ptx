@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<section xml:id="sec-conjunction" xmlns:xi="http://www.w3.org/2001/XInclude">
+  <title>Conjunction</title>
+  <introduction>
+    <p>
+      Lean's conjunction comes equipped with a single <term>introduction rule</term>, <c>And.intro</c>, that is used to construct a term of type <c>p ∧ q</c> a term of type <c>p</c> and a term of type <c>q</c>.
+    </p>
+
+    <p>
+      Conjunction is equipped with two <term>elimination rules</term>,
+      <ul>
+	<li>
+	  <p>
+	    <c>And.left</c> or <c>And.1</c> produces a term of type <c>p</c> from a proof term of type <c>p ∧ q</c>,
+	  </p>
+	</li>
+	<li>
+	  <c> And.right</c> or <c>And.2</c> produces a term of type <c>q</c> from a term of type <c>p ∧ q</c>.
+	</li>
+      </ul>
+    </p>
+  </introduction>
+
+  <subsection xml:id="subsec-conjunction_truth_table">
+    <title>Formalizing the Conjunction Truth Table</title>
+
+    <p>
+      To demonstrate the conjunction elimination and disjunction rules, we construct the rows of the truth table for <m>p \wedge q</m>.
+    </p>
+
+    <table>
+      <title>Truth table for conjunction</title>
+      <tabular halign="center">
+	<row bottom="medium">
+	  <cell right="medium">
+	    <m>p</m>
+	  </cell>
+	  <cell right="medium">
+	    <m>q</m>
+	  </cell>
+	  <cell>
+	    <m>p \wedge q</m>
+	  </cell>
+	</row>
+	<row>
+	  <cell right="medium">
+	    True
+	  </cell>
+	  <cell right="medium">
+	    True
+	  </cell>
+	  <cell>
+	    True
+	  </cell>
+	</row>
+	<row>
+	  <cell right="medium">
+	    True
+	  </cell>
+	  <cell right="medium">
+	    False
+	  </cell>
+	  <cell>
+	    False
+	  </cell>
+	</row>
+	<row>
+	  <cell right="medium">
+	    False
+	  </cell>
+	  <cell right="medium">
+	    True
+	  </cell>
+	  <cell>
+	    False
+	  </cell>
+	</row>
+	<row>
+	  <cell right="medium">
+	    False
+	  </cell>
+	  <cell right="medium">
+	    False
+	  </cell>
+	  <cell>
+	    False
+	  </cell>
+	</row>
+      </tabular>
+    </table>
+
+    <example>
+      <title>Row One</title>
+      <p>
+	The first is a simple application of the introduction rule:
+      </p>
+
+      <program language="lean">
+	<code>
+	  variable (p q : Prop)
+	  example (h_p : p) (h_q : q) : p ∧ q := And.intro h_p h_q
+	</code>
+      </program>
+    </example>
+
+    <remark>
+      <p>
+	Lean also provides an <term>anonymous constructor</term> that can introduce certain terms.
+	Instead of writing <c>And.intro h_p h_q</c>, we could simply write <c>⟨h_p, h_q⟩</c> and Lean will, as if by magic, infer from context that it should construct a proof term of type <c>p ∧ q</c> from from the terms <c>h_p : p</c> and <c>h_q : q</c>.
+      </p>
+
+      <program language="lean">
+	<code>
+	  variable (p q : Prop) 
+	  example (h_p : p) (h_q : q) : p ∧ q := ⟨h_p,h_q⟩
+	</code>
+      </program>
+      
+      <p>
+	It should be noted here that the order does matter.
+	If instead we write <c>⟨h_q, h_p⟩</c>, then Lean will infer that we we wanted a term of type <c>q ∧ p</c>.
+      </p>
+    </remark>
+
+    <p>
+      The remaining facts must be proven by contradiction.
+      In each case, we begin by assuming <c>p ∧ q</c>.
+    </p>
+
+    <example>
+      <title>Row Two</title>
+      <p>
+	The informal argument goes as follows.
+      </p>
+
+      <p>
+	<alert>Proof:</alert>
+	Suppose for contradiction that <m>p \wedge q</m>.
+	Then <m>q</m> must be true, but this contradics the assumption that <m>q</m> is false.
+        Therefore <m>\neg(p \wedge q)</m>. <m>\blacksquare</m>
+      </p>
+
+      <p>
+	Formally, this amounts to evaluating the function <c>h_nq : ¬q</c> at <c>h_pq.right : q</c>.
+      </p>
+
+      <program language="lean">
+	<code>
+	  variable (p q : Prop)
+	  example (h_p : p) (h_nq : ¬q) : ¬(p ∧ q) :=
+	    λ (h_pq : p ∧ q) ↦ h_nq h_pq.right
+	</code>
+      </program>
+    </example>
+
+    <example>
+      <title>Row Three</title>
+      <p>
+	The proof here is essentially the same, but with the roles of <c>p</c> and <c>q</c> reverse.
+      </p>
+
+      <program language="lean">
+	  <code>
+	    variable (p q : Prop)
+	    example (h_np : ¬p) (h_q : q) : ¬(p ∧ q) :=
+	    λ (h_pq : p ∧ q) ↦ h_np h_pq.left
+	  </code>
+      </program>
+    </example>
+
+    <example>
+      <title>Row Four</title>
+      <p>
+	In the final case, we can construct <c>¬(p ∧ q)</c> from either <c>¬p</c> or <c>¬q</c>.
+	This means we can copy/pase paste either the proof from the second or third example here.
+      </p>
+
+      <program language="lean">
+	<code>
+	  variable (p q : Prop)
+	  example  (h_np : ¬p) (h_nq : ¬q) : ¬(p ∧ q) :=
+	    λ (h_pq : p ∧ q) ↦ h_nq h_pq.right
+	</code>
+      </program>
+
+      <program language="lean">
+	<code>
+	  variable (p q : Prop)
+	  example (h_np : ¬p) (h_nq : ¬q) : ¬(p ∧ q) :=
+	  λ (h_pq : p ∧ q) ↦ h_np h_pq.left
+	</code>
+      </program>
+    </example>
+  </subsection>
+</section>

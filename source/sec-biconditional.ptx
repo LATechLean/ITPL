@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<section xml:id="sec-biconditional" xmlns:xi="http://www.w3.org/2001/XInclude">
+  <title>Biconditional</title>
+  <introduction>
+    <p>
+      Similar to conjunction, the biconditional comes equipped with a single <term>introduction rule</term> and two <term>elimination rules</term>.
+    </p>
+
+    <p>
+      The introduction rule is <c>Iff.intro</c>, which constructs a term of type <c>p ↔ q</c> from a term of type <c>p → q</c> and a term of type <c>q → p</c>.
+      As such, the introduction rule generally has the form <cd>Iff.intro (λ h_p : p ↦ ...) (λ h_q : q ↦ ...)</cd>
+    </p>
+
+    <p>
+      The two elimination rules are
+      <dl>
+	<li>
+	  <title>Modus Ponens (MP):</title>
+	  <p>
+	    <c>Iff.mp</c> produces a term of type <c>p → q</c> from a term of type <c>p ↔ q</c>.
+	  </p>
+	</li>
+	<li>
+	  <title>Modus Ponens Reverse (MPR)</title>
+	  <p>
+	    <c>Iff.mpr</c> produces a term of type <c>q → p</c> from a term of type <c>p ↔ q</c>.
+	  </p>
+	</li>
+      </dl>
+    </p>
+  </introduction>
+
+  <subsection xml:id="subsec-biconditional_truth_table">
+    <title>Formalizing the Biconditional Truth Table</title>
+
+    <p>
+      Recall that in traditional logic the biconditional plays the role of equality.
+      Namely, it expresses that two propositions have the same truth values.
+      As an example, we construct the truth table for the biconditional.
+    </p>
+
+    <table>
+      <title>Truth table for biconditional</title>
+      <tabular halign="center">
+	<row bottom="medium">
+	  <cell right="medium">
+	    <m>p</m>
+	  </cell>
+	  <cell right="medium">
+	    <m>q</m>
+	  </cell>
+	  <cell>
+	    <m>p \iff q</m>
+	  </cell>
+	</row>
+	<row>
+	  <cell right="medium">
+	    True
+	  </cell>
+	  <cell right="medium">
+	    True
+	  </cell>
+	  <cell>
+	    True
+	  </cell>
+	</row>
+	<row>
+	  <cell right="medium">
+	    True
+	  </cell>
+	  <cell right="medium">
+	    False
+	  </cell>
+	  <cell>
+	    False
+	  </cell>
+	</row>
+	<row>
+	  <cell right="medium">
+	    False
+	  </cell>
+	  <cell right="medium">
+	    True
+	  </cell>
+	  <cell>
+	    False
+	  </cell>
+	</row>
+	<row>
+	  <cell right="medium">
+	    False
+	  </cell>
+	  <cell right="medium">
+	    False
+	  </cell>
+	  <cell>
+	    True
+	  </cell>
+	</row>
+      </tabular>
+    </table>
+
+    <p>
+      These proofs are all a bit silly, so it helps to write the pieces explicitly.
+    </p>
+
+    <example>
+      <title>Row One</title>
+
+      <p>
+	<alert>Proof:</alert>
+	Assume <m>p</m> is true and <m>q</m> is true.
+	First assume <m>p</m> is true.  Then <m>q</m> is true by assumption.
+      </p>
+
+      <p>	
+	Convsersely, assume <m>q</m> is true.
+	Then p is true by assumption.
+	Therefore <m>p \iff q</m>. <m>\blacksquare</m>
+      </p>
+
+      <p>
+	In order to construct the formal argument, recall that implication is a function.
+	This tells us the two arguments to <c>Iff.intro</c>
+	<ol>
+	  <li>
+	    <p>
+	      <c>λ (h_mp : p) ↦ h_q</c>
+	    </p>
+	  </li>
+	  <li>
+	    <p>
+	      <c>λ (h_mpr : q) ↦ h_p</c>
+	    </p>
+	  </li>
+	</ol>
+      </p>
+      <program language="lean">
+	<code>
+	  variable (p q : Prop)
+	  example (h_p : p) (h_q : q) : p ↔ q :=
+	    Iff.intro
+	    (λ _ ↦ h_q) -- The hypothesis p is replace with the wildcard
+	                -- _ because it is not used.
+	      (λ _ ↦ h_p) -- Same for q.
+	</code>
+      </program>
+    </example>
+
+    <remark>
+      <p>
+	Like conjunction, we can use the anonymous constructor to introduce <c>Iff</c> terms.
+	
+	<program language="lean">
+	  <code>
+	    example (p q : Prop) (h_p : p) (h_q : q) : p ↔ q :=
+	      ⟨(λ _ ↦ h_q), (λ _ ↦ h_p)⟩
+	  </code>
+	</program>
+
+      </p>
+    </remark>
+
+    <p>
+      Since we want to construct terms of type <c>¬(p ↔ q)</c>, the next two proofs are by contradiction.
+      This is where we'll need the elimination rules.
+    </p>
+
+    <example>
+      <title>Rows Two and Three</title>
+      <p>
+	In both cases, we have the hypothesis <c>h_pq : p ↔ q</c>.
+      </p>
+
+      <p>
+	For the first, the only way to derive a contradiction is to use <c>h_nq : q → False</c>.
+	Since we have the hypothesis <c>h_p : p</c>, we obtain the term <c>h_pq.mp h_p : q</c> and thus <c>h_nq (h_pq.mp h_p) : False</c>.
+      </p>
+
+      <program language="lean">
+	<code>
+	  variable (p q : Prop)
+	  example  (h_p : p) (h_nq : ¬q) : ¬(p ↔ q) :=
+	    λ (h_pq : p ↔ q) ↦ h_nq (h_pq.mp h_p)
+	</code>
+      </program>
+
+      <p>
+	The second is nearly identical; just use <c>h_pq.mpr</c> and swap the roles of <c>p</c> and <c>q</c>.
+      </p>
+
+      <program language="lean">
+	<code>
+	  variable (p q : Prop)
+	  example (h_np : ¬p) (h_q : q) : ¬(p ↔ q) :=
+	    λ (h_pq : p ↔ q) ↦ h_np (h_pq.mpr h_q)
+	</code>
+      </program>
+    </example>
+
+    <example>
+      <title>Row Four</title>
+      <p>
+	For the final statement, note we are proving the two assertions
+	<ul>
+	  <li>
+	    <p>
+	      <c>¬p → (p → q)</c>, and
+	    </p>
+	  </li>
+	  <li>
+	    <p>
+	      <c>¬q → (q → p)</c>.
+	    </p>
+	  </li>
+	</ul>
+	Each one of these is precisely the final row of the implication truth table.
+	We use the exact same proof with appropriate adjustments.
+      </p>
+    
+      <program language="lean">
+	<code>
+	  variable (p q : Prop)
+	  example  (h_np : ¬p) (h_nq : ¬q) : p ↔ q :=
+	    Iff.intro
+	      (λ (h_p : p) ↦ False.elim (h_np h_p))
+	      (λ (h_q : q) ↦ False.elim (h_nq h_q))
+	</code>
+      </program>
+    </example>
+  </subsection>
+</section>

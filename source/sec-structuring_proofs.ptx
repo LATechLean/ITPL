@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<section xml:id="sec-structuring_proofs" xmlns:xi="http://www.w3.org/2001/XInclude">
+  <title>Structuring Proofs</title>
+  <p>
+    As we build up to more elaborate proofs, we will start to see the <c>λ</c> constructions will quickly become unwieldy.
+    For example, let us consider the term proof for one of De Morgan's laws:
+  </p>
+
+  <theorem>
+    <statement>
+      <p>
+	Assume <m>p</m> and <m>q</m> are propositions.
+	Then <m>\neg(p \vee q)</m> is logically equivalent to <m>\neg p \wedge \neg q</m>.
+      </p>
+    </statement>
+
+    <proof>
+      <p>
+	Assume <m>p \vee q</m> is false.
+	To prove <m>p</m> is false, suppose to the contrary that <m>p</m> is true.
+	Then <m>p \vee q</m> is true, contrary to the assumption <m>p \vee q</m> is false.
+	Hence <m>p</m> is false.
+      </p>
+
+      <p>
+	To prove that <m>q</m> is false, suppose to the contrary that <m>q</m> is true.
+	Then <m>p \vee q</m> is true, contrary to the assumption that <m>p \vee q</m> is false.
+	Hence <m>q</m> is false.
+        Therefore <m>\neg p \wedge \neg q</m> is true.
+      </p>
+
+      <p>
+	Conversely, assume <m>\neg p \wedge \neg q</m> is true; that is, <m>p</m> is false and <m>q</m> is false.
+	Suppose for contradiction that <m>p ∨ q</m> is true.
+	There are two cases the consider:
+	<ol>
+	  <li>
+	    <p>
+	      <m>p</m> is true.
+	      This contradicts the assumption that <m>p</m> is false.
+	    </p>
+	  </li>
+	  <li>
+	    <p>
+	      <m>q</m> is true.
+	      This contradicts the assumption that <m>q</m> is false.
+	    </p>
+	  </li>
+	</ol>
+	Hence the supposition <m>p \vee q</m> is true contradicts the assumption that <m>p</m> and <m>q</m> are both false.
+	Therefore <m>p \vee q</m> is false.
+      </p>
+    </proof>
+  </theorem>
+
+  <p>
+    As above, we can judicioiusly translate this into a term proof by building it in stages.
+    Since the proof term must be an If and Only If, we must use <c>Iff.intro</c> or <c>⟨_,_⟩</c> and build the two
+    arguments MP and MPR.
+    <ol>
+      <li>
+	<p>
+	  The MP begins with the assumption <c>¬(p ∨ q)</c>, so we start from <c>λ h_mp : ¬(p ∨ q) ↦ ...</c>.
+          To construct <c>¬p ∧ ¬q</c>, we introduce a conjunction using <c>And.intro</c> or <c>⟨_,_⟩</c>.
+	  The two sides have the form <c>λ (h_p : p) ↦ ...</c> and <c>λ (h_q : q) ↦ ...</c>.
+	  In each case, we intend to arrive at a contradiction, so we must use introduce <c>p ∨ q</c> and then apply <c>h_mp : p ∨ q → False</c>.
+          We introduce <c>p ∨ q</c> using <c>Or.inl</c> and the hypothesis (a term of type <c>p</c> or <c>q</c>), so the final branches will be:
+          <ul>
+	    <li>
+	      <p>
+		<c>λ (h_p : p) ↦ h_mp (Or.inl h_p)</c>
+	      </p>
+	    </li>
+	    <li>
+	      <p>
+		<c>λ (h_q : q) ↦ h_mp (Or.inl h_q)</c>
+	      </p>
+	    </li>
+	  </ul>
+	</p>
+      </li>
+      <li>
+	<p>
+	  The MPR begins with the assumption <c>¬p ∧ ¬q</c>, so the initial proof term is <c>λ (h_mpr : ¬p ∧ ¬q) ↦ ...</c>.
+	  Next, we suppose <c>p ∨ q</c> and derive a contradiction by cases.
+          The next term will have the form <c>λ (h_pq : p ∨ q) ↦ ...</c>.
+	  We split the two cases using the elimination rule <c>Or.elim</c>.
+          <ol>
+	    <li>
+	      <p>
+		We derive the contradiction by applying <c>h_mpr.left : p → False</c> to the assumption <c>h_p : p</c>.
+	      </p>
+	    </li>
+	    <li>
+	      <p>
+		We derive the contradiction by applying <c>h_mpr.right : q → False</c> to the assumption <c>h_q : q</c>.
+	      </p>
+	    </li>
+	  </ol>
+	</p>
+      </li>
+    </ol>
+    Putting all of this together results in the following seemingly inscrutible term proof.
+  </p>
+
+  <program language="lean">
+    <code>
+      variable (p q : Prop)
+      theorem not_or : ¬(p ∨ q) ↔ ¬p ∧ ¬q :=
+        ⟨(λ (h_mp : ¬(p ∨ q)) ↦
+          ⟨λ (h_p : p) ↦ h_mp (Or.inl h_p),
+           λ (h_q : q) ↦ h_mp (Or.inr h_q)⟩),
+         (λ  (h_mpr : ¬p ∧ ¬q) (h_pq : p ∨ q) ↦
+           Or.elim (h_pq)
+             (λ (h_p : p) ↦ h_mpr.left h_p)
+             (λ (h_q : q) ↦ h_mpr.right h_q))⟩
+    </code>
+  </program>
+
+  <p>
+    Using the names of the introduction rules may or may not make this marginally better.
+  </p>
+
+  <program language="lean">
+    <code>
+      variable (p q : Prop)
+      theorem not_or₂ : ¬(p ∨ q) ↔ ¬p ∧ ¬q :=
+        Iff.intro
+          (λ (h_mp : ¬(p ∨ q)) ↦
+            And.intro
+              (λ (h_p : p) ↦ h_mp (Or.inl h_p))
+              (λ (h_q : q) ↦ h_mp (Or.inr h_q)))
+          (λ (h_mpr : ¬p ∧ ¬ q) (h_pq : p ∨ q) ↦
+            Or.elim (h_pq)
+              (λ (h_p : p) ↦ h_mpr.left h_p)
+              (λ (h_q : q) ↦ h_mpr.right h_q))
+    </code>
+  </program>
+
+<p>
+  Fortunately, Lean provides some tools for us to improve readability.
+</p>
+
+<p>
+  One such tool is the <c>show ... from ... </c> construct.
+  This helps the reader to better parse the goal that is being proven.
+</p>
+
+<program language="lean">
+  <code>
+    variable (p q : Prop)
+    theorem not_or₃ : ¬(p ∨ q) ↔ ¬p ∧ ¬q :=
+      Iff.intro
+      (λ (h_mp : ¬(p ∨ q)) ↦ show ¬p ∧ ¬q from And.intro
+        (λ (h_p : p) ↦ show False from h_mp (Or.inl h_p))
+        (λ (h_q : q) ↦ show False from h_mp (Or.inr h_q)))
+      (λ (h_mpr : ¬p ∧ ¬ q) (h_pq : p ∨ q) ↦
+        show False from Or.elim (h_pq)
+          (λ (h_p : p) ↦ show False from h_mpr.left h_p)
+          (λ (h_q : q) ↦ show False from h_mpr.right h_q))
+  </code>
+</program>
+
+<p>
+  Another tool that can help improve readability is to define and prove subgoals.
+  In longer proofs, this is common to help focus the reader's attention on a particular
+  task.
+</p>
+
+<program language="lean">
+  <code>
+    variable (p q : Prop)
+    theorem not_or₄ : ¬(p ∨ q) ↔ ¬p ∧ ¬q :=
+      Iff.intro
+        (λ (h_mp : ¬(p ∨ q)) ↦
+          have h_np : ¬p := λ (h_p : p) ↦ h_mp (Or.inl h_p)
+          have h_nq : ¬q := λ (h_q : q) ↦ h_mp (Or.inr h_q)
+        show ¬p ∧ ¬q from And.intro h_np h_nq)
+          (λ (h_mpr : ¬p ∧ ¬q) (h_pq : p ∨ q) ↦
+            have h_np : ¬p := h_mpr.left
+            have h_nq : ¬q := h_mpr.right
+            show False from Or.elim (h_pq)
+              (λ (h_p : p) ↦ show False from h_np h_p)
+              (λ (h_q : q) ↦ show False from h_nq h_q))
+  </code>
+</program>
+
+<p>
+  In longer proofs, it is quite common to reduce the proof to a particular statement.
+  This frequently occurs as a courtesy to the reader, especially when the next step is seemingly unintuitive or unmotivated.
+</p>
+
+<program language="lean">
+  <code>
+    example (p q r : Prop) : (p ∧ q) ∧ r ↔ p ∧ (q ∧ r) :=
+      Iff.intro
+        (λ h_mp : (p ∧ q) ∧ r ↦
+          have h_p : p := h_mp.left.left
+          have h_q : q := h_mp.left.right
+          have h_r : r := h_mp.right
+          suffices h_qr : q ∧ r from ⟨h_p, h_qr⟩
+            ⟨h_q,h_r⟩)
+        (λ h_mpr : p ∧ q ∧ r ↦
+          have h_p : p := h_mpr.left
+          have h_q : q := h_mpr.right.left
+          have h_r : r := h_mpr.right.right
+          suffices h_pq : p ∧ q from ⟨h_pq,h_r⟩
+           ⟨h_p,h_q⟩)
+  </code>
+</program>
+</section>

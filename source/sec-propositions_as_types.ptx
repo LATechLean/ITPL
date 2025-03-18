@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+  <section xml:id="sec-propositions_as_types" xmlns:xi="http://www.w3.org/2001/XInclude">
+    <title>Propositions as Types</title>
+
+    <p>
+      In Lean, propositions are their own type, Prop.
+      Two built-in terms of type Prop are
+      <ul>
+	<li>
+	  <p><c>True</c> - the proposition that is always true.</p>
+	  <p><c>False</c> - the proposition that is always false</p>
+	</li>
+      </ul>
+    </p>
+
+    <program language="lean">
+      <code>
+	#check (True : Prop)
+	#check (False : Prop)
+      </code>
+    </program>
+
+    <p>
+      Lean has all of the familiar constructions for <c>p q : Prop</c>.
+      <dl>
+	<li>
+	  <title>Negation</title>
+	  <p>
+	    <c>¬p</c>.
+	  </p>
+	</li>
+	<li>
+	  <title>Implication</title>
+	  <p>
+	    <c>p → q</c>.
+	  </p>
+	</li>
+	<li>
+	  <title>Conjunction</title>
+	  <p>
+	    <c>And p q</c> or <c>p ∧ q</c>
+	  </p>
+	</li>
+	<li>
+	  <title>Disjunction</title>
+	  <p>
+	    <c>Or p q</c> or <c>p ∨ q</c>
+	  </p>
+	</li>
+	<li>
+	  <title>Biconditional</title>
+	  <p>
+	    <c>Iff p q</c> or <c>p ↔ q</c>.
+	  </p>
+	</li>
+      </dl>
+    </p>
+
+    <program language="lean">
+      <code>
+	variable (p q : Prop) (h_p : p) (h_np : ¬p)
+
+	#check ¬p        -- A proposition named p
+	#check h_p       -- A proof of p
+	#check p ∧ q     -- The conjunction of p and q.
+	#check p ∨ q     -- The disjunction of p and q.
+	#check p → q     -- The conditional If p, then q.
+	#check p ↔ q     -- The bicondition p if and only if q.
+      </code>
+    </program>
+
+    <p>
+      The case of negation is likely the strangest of the lot.
+      The type <c>¬p</c> is actually shorthand for the function <c>p → False</c>.
+      We will see how this is useful in the future.
+    </p>
+
+    <program language="lean">
+      <code>
+	#check False
+	variable (p : Prop) (h_np : ¬ p)
+	#check (h_np : p → False)
+	end
+      </code>
+    </program>
+
+    <p>
+      In order to work with propositions and proof, we need a way to declare them.
+      We have three keywords for doing so:
+      <ul>
+	<li>
+	  <p>
+	    theorem
+	  </p>
+	</li>
+	<li>
+	  <p>
+	    lemma
+	  </p>
+	</li>
+	<li>
+	  <p>
+	    example
+	  </p>
+	</li>
+      </ul>
+      A theorem and a lemma both have names, while an example does not.
+      The keywords theorem and lemma behave the same, but provide information to the reader.
+      Generally, a lemma is a small result that is abstracted from the proof of a theorem.
+    </p>
+
+    <example>
+      <p>
+	The following is a trivial <c>lemma</c> that asserts given
+	<ul>
+	  <li>
+	    <p>
+	      <c>p : Prop</c>, and
+	    </p>
+	  </li>
+	  <li>
+	    <p>
+	      a proof <c>h_p : p</c> of <c>p</c>
+	    </p>
+	  </li>
+	</ul>
+	<c>p</c> is true.
+      </p>
+
+      <program language="lean">
+	<code>
+	  lemma myLemma : (p : Prop) → (h_p : p) → p  := sorry
+
+	  #check (myLemma : (p : Prop) → p → p)
+	</code>
+      </program>
+    </example>
+    
+    <example>
+      <p>
+	The following is a slightly less trivial <c>theorem</c> that asserts that given
+	<ul>
+	  <li>
+	    <p>
+	      <c>p : Prop</c>,
+	    </p>
+	  </li>
+	  <li>
+	    <p>
+	      a proof <c>h_p : p</c>, and
+	    </p>
+	  </li>
+	  <li>
+	    <p>a proof <c>h_np : ¬p</c></p>
+	  </li>
+	</ul>
+	we have a contradiction (<c>False</c>).
+      </p>
+
+      <p>
+	This is to say, the assertion that <c>p</c> and its negation are both true implies the proposition that is always false (<c>False</c>).
+      </p>
+
+      <program language="lean">
+	<code>
+	  theorem myTheorem : (p : Prop) → (h_p : p) → (h_np : ¬p) → False := sorry
+	  
+	  #check (myTheorem : (p : Prop) → p → ¬p → False)
+	</code>
+      </program>
+    </example>
+
+    <p>
+      Just as for functions, we can replace the <c>→</c> construction by placing arguments (hypotheses) to the left of the colon and the resulting type (conclusion) to the right.
+    </p>
+
+    <program language="lean">
+      <code>
+	theorem myEquivalentTheorem (p : Prop) (h_p : p) (h_np : ¬p): False  := sorry
+      </code>
+    </program>
+
+    <p>
+      We can also move hypotheses outside the declaration using variables.
+    </p>
+
+    <program language="lean">
+      <code>
+	variable (p : Prop)
+	theorem yetAnotherEquivalentTheorem (h_p : p) (h_np: ¬p) : False := sorry
+      </code>
+    </program>
+
+    <p>
+      We'll see soon that myTheorem and myEquivalentTheorem are definitionally equal.
+      This means that Lean sees no difference between the two theorems.
+    </p>
+
+    <program language="lean">
+      <code>
+	example : myTheorem = myEquivalentTheorem := sorry
+	
+	#check (myTheorem = myEquivalentTheorem : Prop)
+      </code>
+    </program>
+
+    <p>
+      We note <c>myLemma</c> and the <c>myTheorem</c> have function types, while the example has <c>Prop</c> as its type.
+      Providing a proof of any of these statements is equivalent to constructing a term of the correct type.
+    </p>
+    
+    <p>
+      The proof of <c>myLemma</c> is trivial: if we assume <c>p</c> is true, then <c>p</c> is true.
+      That is to say, our function has two input values
+      <ul>
+	<li>
+	  <p><c>p : Prop</c></p>
+	</li>
+	<li>
+	  <p><c>h_p : p,</c></p>
+	</li>
+      </ul>
+      where <c>h_p</c> represents a proof that <c>p</c> is true.
+      Hence we can construct a proof of <c>p</c> using the very assumption <c>h_p</c>.
+    </p>
+
+    
+    <program language="lean">
+      <code>
+	lemma myLemma : (p : Prop) → (h_p : p) → p  := 
+	  λ (p : Prop) (h_p : p) ↦ h_p
+      </code>
+    </program>
+
+    <p>
+      For <c>myTheorem</c>, we need to remember that <c>h_np : ¬p</c> is actually a function <c>h_np : p → False</c>.
+      That is to say, the function <c>h_np</c> maps <em>any</em> proof of <c>p : Prop</c> to the proposition <c>False</c>.
+      Since we are given a proof, <c>h_p : p</c>, as an assumption, we need only apply the function <c>h_np</c> to <c>h_p</c>:
+      <cd>h_np h_p : (p → False) p = False</cd>
+      to obtain precisely the <c>False</c> term we are asked to construct.
+    </p>
+
+    <program language="lean">
+      <code>
+	variable (p : P)
+	theorem myTheorem (h_p : p) (h_np : ¬p) : False := h_np h_p
+      </code>
+    </program>
+  </section>

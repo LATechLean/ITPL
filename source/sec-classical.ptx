@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<section xml:id="sec-classical" xmlns:xi="http://www.w3.org/2001/XInclude">
+  <title>Classical Logic</title>
+
+  <p>
+    So far, the logic we have used <em>does not</em> assume propositions must be either true or false.
+    The assertion that <c>p : Prop</c> must be either true or false is an axiom called the <term>Law of Excluded Middle</term>.
+    In order to prove statements that rely on this type of reasoning, we need the <c>Classical</c> library.
+    <cd>#check (Classical.em : (p : Prop) → p ∨ ¬p)</cd>
+  </p>
+
+  <example>
+    <title>Double Negation</title>
+    <p>
+      We can use the law of excluded middle to prove ¬¬p is logically equivalent to p.
+      Note that <c>¬¬p : ¬p → False</c>.
+    </p>
+
+    <program language="lean">
+      <code>
+	variable (p : Prop)
+	theorem dn : (¬¬p ↔ p) :=
+        ⟨
+	  λ h_nnp : ¬¬p ↦ Or.elim (Classical.em p)
+          (λ h_p : p ↦ h_p)
+	  (λ h_np : ¬p ↦
+          False.elim (h_nnp h_np)),
+	  λ (h_p : p) (h_np : ¬p) ↦ h_np h_p
+	⟩
+      </code>
+    </program>
+  </example>
+
+  <p>
+    In fact, we can also show that <c>dn</c> implies <c>em</c>.
+    This tells us that double negation elimination is equivalent to the law of excluded middle.
+  </p>
+
+  <p>
+    The proof isn't difficult, but does require some mental gymnastics.
+    We first observe that we can easily prove <c>¬¬(p ∨ ¬p)</c>.
+  </p>
+
+  <proof>
+    <p>
+      Assume <m>\neg(p \vee \neg p)</m>.
+      Suppose <m>p</m> for contradiction.
+      Then <m>p \vee \neg p</m>, contrary to the assumption <m>\neg(p \vee \neg p)</m>.
+      Hence <m>\neg p</m> and thus <m>p \vee \neg p</m>, a contradiction.
+      Therefore ¬¬(p ∨ ¬p).
+    </p>
+  </proof>
+
+  <program language="lean">
+    <code>
+      lemma em_lemma (p : Prop) : ¬¬(p ∨ ¬p) :=
+        λ h : ¬(p ∨ ¬p) ↦
+         have h_np : ¬p := λ h_p ↦ h (Or.inl h_p)
+         h (Or.inr h_np)
+    </code>
+  </program>
+
+  <p>
+    Now we push everything through double negation:
+  <cd>
+    <cline>
+      variable (p : Prop)
+      theorem em : p ∨ ¬p := (dne (p ∨ ¬p)).mp (em_lemma p)
+    </cline>
+  </cd>
+  </p>
+</section>

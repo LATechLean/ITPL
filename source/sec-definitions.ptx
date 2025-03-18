@@ -1,69 +1,77 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-  <section xml:id="sec-definitions" xmlns:xi="http://www.w3.org/2001/XInclude">
-    <title>Definitions</title>
-    <p>
-      Having to write out these expressions over and over again is quite cumbersome.
-      We can assign the name <c>t</c> to a term of type <c>T</c> with value <c>v</c> in Lean using the <c>def</c> keyword
-      <c>def (t : T) := v</c>.
-    </p>
+<section xml:id="sec-definitions" xmlns:xi="http://www.w3.org/2001/XInclude">
+  <title>Definitions</title>
+  <p>
+    Having to write out these expressions over and over again is quite cumbersome.
+    We can assign the name <c>t</c> to a term of type <c>T</c> with value <c>v</c> in Lean using the <c>def</c> keyword
+    <c>def (t : T) := v</c>.
+  </p>
 
-    <example>
-      <program language="lean">
-	<code>
-	  def m : ℕ := 1
-	  def n := 0                       -- Lean can often infer the type.
-	  def b₁ : Bool := true            -- use "\1" to typeset the subscript.
-	  def b₂ := false
-	  def s := "Hello, world!"
-	</code>
-      </program>
-    </example>
+  <example>
+    <program language="lean">
+      <code>
+	def m : ℕ := 1
+	def n := 0                       -- Lean can often infer the type.
+	def b₁ : Bool := true            -- use "\1" to typeset the subscript.
+	def b₂ := false
+	def s := "Hello, world!"
+      </code>
+    </program>
+  </example>
 
-    <p>
-      When the term we want to define is a function, we can omit the lambda notation.
-      <ul>
-	<li>
-	  <p>
-	    Arguments to our function appear after the name and before a semicolon.
-	  </p>
-	</li>
-	<li>
-	  <p>
-	    The type of the output appears after the semicolon.
-	  </p>
-	</li>
-	<li>
-	  <p>
-	    The output term appears after the <c>:=</c> symbol.
-	  </p>
-	</li>
-      </ul>
-    </p>
+  <p>
+    When the term we want to define is a function, we can omit the lambda notation.
+    <ul>
+      <li>
+	<p>
+	  Arguments to our function appear after the name and before a semicolon.
+	</p>
+      </li>
+      <li>
+	<p>
+	  The type of the output appears after the semicolon.
+	</p>
+      </li>
+      <li>
+	<p>
+	  The output term appears after the <c>:=</c> symbol.
+	</p>
+      </li>
+    </ul>
+  </p>
 
-    <example>
-      <program language="lean">
-	<code>
-	  def first (x y : ℕ) : ℕ := x
-	  def second (x y : ℕ) : ℕ := y
+  <example>
+    <program language="lean">
+      <code>
+	def first (x y : ℕ) : ℕ := x
+	def second (x y : ℕ) : ℕ := y
 
-	  #check (first : ℕ → ℕ → ℕ)
-	  #eval first 1 2
+	#check (first : ℕ → ℕ → ℕ)
+	#eval first 1 2
 
-	  #check (second : ℕ → ℕ → ℕ)
-	  #eval second 1 2
+	#check (second : ℕ → ℕ → ℕ)
+	#eval second 1 2
 
-	  def add_one (x : ℕ) := x + 1
-	  #check (add_one : ℕ → ℕ)
+	def add_one (x : ℕ) := x + 1
+	#check (add_one : ℕ → ℕ)
 
-	  def ev_1 (f : ℕ → ℕ) := f 1
-	  #check (ev_1 : (ℕ → ℕ) → ℕ)
+	def ev_1 (f : ℕ → ℕ) := f 1
+	#check (ev_1 : (ℕ → ℕ) → ℕ)
 
-	  #check (ev_1 add_one : ℕ)
-	  #eval ev_1 add_one
-	</code>
-      </program>
-    </example>
+	#check (ev_1 add_one : ℕ)
+	#eval ev_1 add_one
+      </code>
+    </program>
+  </example>
+
+  <reading-questions>
+    <title>Definition Checkpoint</title>
+    <introduction>
+      <p>
+	Before moving on, make sure you understand how to define the following functions.
+      </p>
+    </introduction>
 
     <exercise>
       <statement>
@@ -79,7 +87,6 @@
 	</program>
       </statement>
     </exercise>
-    
 
     <exercise>
       <statement>
@@ -115,7 +122,6 @@
 	</program>
       </statement>
     </exercise>
-    
 
     <exercise>
       <statement>
@@ -133,7 +139,6 @@
 	</program>
       </statement>
     </exercise>
-    
 
     <exercise>
       <statement>
@@ -202,7 +207,7 @@
     <exercise>
       <statement>
 	<p>
-	  Use <c>#eval</c> to evaluate the expression <m>(2*x)^2</m> at <m>x = 3</m> using the functions
+	  Use <c>#eval</c> to evaluate the expression <m>(2x)^2</m> at <m>x = 3</m> using the functions
 	  <ul>
 	    <li>
 	      <p>
@@ -224,4 +229,6 @@
 	</p>
       </statement>
     </exercise>
-  </section>
+  </reading-questions>
+
+</section>
